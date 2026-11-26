@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест: Аралас сандарды қосу. Аралас сандарды азайту — 5Ә</title>
+<style>
+  :root{
+    --ink:#1d2433; --muted:#5b6475; --line:#d7dbe3; --bg:#f6f7f9;
+    --paper:#ffffff; --accent:#1f3a68; --accent-soft:#e8edf6;
+    --ok:#2e6b3a; --bad:#9b2c2c; --warn:#8a5a00;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"PT Serif","Georgia","Times New Roman",serif;font-size:17px;line-height:1.5;
+    -webkit-user-select:none;user-select:none}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:28px 28px 24px}
+  .hidden{display:none!important}
+  h1{font-size:1.45rem;margin:0 0 6px;font-weight:700;color:var(--accent)}
+  h2{font-size:1.1rem;margin:0 0 14px;font-weight:700}
+  .sub{color:var(--muted);font-size:.95rem;margin:0}
+  .meta{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:18px 0;padding:12px 0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.93rem;color:var(--muted)}
+  .meta b{color:var(--ink);font-weight:600}
+  .meta div{margin:3px 0}
+  label{display:block;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.9rem;
+    color:var(--muted);margin:14px 0 6px}
+  input[type=text],select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:1rem;font-family:inherit;background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
+  input[type=text]:focus,select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+  .rules{background:var(--accent-soft);border-left:3px solid var(--accent);padding:12px 14px;margin-top:18px;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.88rem;color:#2a3550}
+  .rules ul{margin:6px 0 0;padding-left:18px}
+  .btn{display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    padding:11px 26px;border-radius:4px;font-size:1rem;cursor:pointer;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .btn:disabled{background:#b7bfcc;border-color:#b7bfcc;cursor:not-allowed}
+  .btn.ghost{background:#fff;color:var(--accent)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.9rem;color:var(--muted);
+    margin-bottom:10px}
+  .timer{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);border:1px solid var(--line);
+    padding:4px 10px;border-radius:4px;background:#fff}
+  .timer.low{color:var(--bad);border-color:var(--bad)}
+  .progress{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:18px}
+  .progress > div{height:100%;background:var(--accent);width:0}
+  .qnum{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.85rem;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+  .qtext{font-size:1.12rem;margin:0 0 20px}
+  .expr{display:block;text-align:center;font-size:1.35rem;margin:14px 0 4px}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:4px;padding:10px 14px;
+    cursor:pointer;background:#fff;font-size:1.15rem;min-height:58px}
+  .opt:hover{border-color:#9aa6bb}
+  .opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+  .opt .let{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.9rem;font-weight:600;
+    width:28px;height:28px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;
+    justify-content:center;color:var(--muted);flex:0 0 28px;background:#fff}
+  .opt.sel .let{border-color:var(--accent);color:#fff;background:var(--accent)}
+  /* бөлшек */
+  .mx{display:inline-flex;align-items:center;vertical-align:middle;gap:3px;white-space:nowrap}
+  .fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.82em;line-height:1.15}
+  .fr span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+  .fr span:last-child{padding:0 3px}
+  /* сандық жауап */
+  .numbox{max-width:340px;margin:0 auto}
+  .numinput{width:100%;text-align:center;font-size:1.6rem;padding:10px;border:1px solid var(--accent);border-radius:4px;
+    background:#fff;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    font-variant-numeric:tabular-nums;min-height:58px;letter-spacing:.03em}
+  .numinput.empty{color:#a0a8b6;font-size:1.05rem;line-height:2.2}
+  .keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  .key{border:1px solid var(--line);background:#fff;border-radius:4px;padding:13px 0;font-size:1.2rem;cursor:pointer;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);touch-action:manipulation}
+  .key:active{background:var(--accent-soft)}
+  .key.fn{background:#f1f3f6;color:var(--accent);font-weight:600}
+  .hint{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.82rem;color:var(--muted);
+    text-align:center;margin-top:8px}
+  /* модаль */
+  .modal{position:fixed;inset:0;background:rgba(20,26,38,.55);display:flex;align-items:center;justify-content:center;
+    padding:16px;z-index:50}
+  .modal .box{background:#fff;max-width:440px;width:100%;border-radius:6px;padding:22px;border-top:4px solid var(--warn)}
+  .modal h3{margin:0 0 8px;color:var(--warn);font-size:1.1rem}
+  .modal p{margin:0 0 16px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.95rem}
+  /* нәтиже */
+  .score{font-size:3rem;font-weight:700;color:var(--accent);text-align:center;margin:10px 0 0}
+  .score small{font-size:1.2rem;color:var(--muted);font-weight:400}
+  table{width:100%;border-collapse:collapse;margin-top:16px;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.92rem}
+  td,th{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left}
+  th{color:var(--muted);font-weight:600}
+  .ok{color:var(--ok);font-weight:600}.bad{color:var(--bad);font-weight:600}
+  .status{text-align:center;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:.9rem;
+    color:var(--muted);margin-top:12px}
+  .footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:16px;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  @media (max-width:520px){
+    .card{padding:20px 16px}
+    .qtext{font-size:1.05rem}
+    .expr{font-size:1.25rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- БАСТАПҚЫ ТЕРЕЗЕ -->
+  <section id="start" class="card">
+    <p class="sub">Тест</p>
+    <h1>Аралас сандарды қосу. Аралас сандарды азайту</h1>
+    <div class="meta">
+      <div>Пән: <b>Математика</b></div>
+      <div>Сынып: <b>5</b></div>
+      <div>Оқу мақсаттары: <b>5.1.2.19</b> натурал саннан жай бөлшекті азайтуды орындау; <b>5.1.2.20</b> аралас сандарды қосу және азайтуды орындау</div>
+      <div>Мұғалім: <b>математика пәнінің мұғалімі – Кунгозин Даулет Багдашұлы</b></div>
+    </div>
+
+    <label for="fio">Тегі, аты</label>
+    <input type="text" id="fio" placeholder="Введите ФИ" autocomplete="off">
+
+    <label for="klass">Сынып</label>
+    <select id="klass">
+      <option value="">— таңдаңыз —</option>
+      <option value="5Ә">5Ә</option>
+    </select>
+
+    <label for="variant">Нұсқа</label>
+    <select id="variant">
+      <option value="">— таңдаңыз —</option>
+      <option value="1">1-нұсқа</option>
+      <option value="2">2-нұсқа</option>
+    </select>
+
+    <div class="rules">
+      <b>Тест ережесі</b>
+      <ul>
+        <li>10 тапсырма: 8 тапсырмада бір дұрыс жауапты таңдаңыз, 2 тапсырмада санды енгізіңіз.</li>
+        <li>Әр тапсырмаға — 3 минут. Уақыт бітсе, келесі тапсырмаға автоматты түрде өтеді.</li>
+        <li>Әр дұрыс жауап — 1 балл, барлығы 10 балл. Алдыңғы тапсырмаға қайту жоқ.</li>
+        <li>Тест кезінде қойындыны (вкладканы) жаппаңыз және жиыраңыз. Жиырсаңыз, баға 1 балға төмендетіледі.</li>
+      </ul>
+    </div>
+
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" id="btnStart" disabled>Келесі</button>
+    </div>
+  </section>
+
+  <!-- ТЕСТ -->
+  <section id="quiz" class="card hidden">
+    <div class="topbar">
+      <span id="who"></span>
+      <span class="timer" id="timer">03:00</span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="qnum" id="qnum"></div>
+    <div class="qtext" id="qtext"></div>
+    <div id="answerArea"></div>
+    <div class="row">
+      <span class="sub" id="qhint"></span>
+      <button class="btn" id="btnNext" disabled>Келесі</button>
+    </div>
+  </section>
+
+  <!-- НӘТИЖЕ -->
+  <section id="result" class="card hidden">
+    <h2>Тест аяқталды</h2>
+    <p class="sub" id="resWho"></p>
+    <div class="score" id="resScore"></div>
+    <p class="status" id="resNote"></p>
+    <p class="status" id="sendStatus">Нәтиже жіберілуде…</p>
+  </section>
+
+  <p class="footer">Математика · 5-сынып · Кунгозин Д. Б.</p>
+</div>
+
+<!-- ЕСКЕРТУ -->
+<div class="modal hidden" id="warn">
+  <div class="box">
+    <h3>Ескерту!</h3>
+    <p id="warnText">Сіз тест кезінде қойындыдан (вкладкадан) шықтыңыз. Қойындыны жиырған жағдайда баға 1 балға төмендетіледі. Тест жалғасады.</p>
+    <div style="text-align:right"><button class="btn" id="warnOk">Түсіндім, жалғастыру</button></div>
+  </div>
+</div>
+
+<script>
+/* ======== БАПТАУ: Apps Script веб-қолданбасының URL-ін осында қойыңыз ======== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqRIMpmuPJaHhyrTvW_gCL3fmnauSMrTE2rRvCcOXAF2Y8pgMO5uaOKcgZnuQRLgBgRg/exec";
+/* ============================================================================ */
+
+const TIME_PER_Q = 180;      // 3 минут
+const MAX_SCORE  = 10;
+
+/* Бөлшек белгісі: [3/5] — жай бөлшек, [2|3/5] — аралас сан */
+function fmt(s){
+  return s.replace(/\[(?:(\d+)\|)?(\d+)\/(\d+)\]/g,(m,w,n,d)=>
+    '<span class="mx">'+(w?'<span>'+w+'</span>':'')+
+    '<span class="fr"><span>'+n+'</span><span>'+d+'</span></span></span>');
+}
+
+/* type: "mc" — таңдау (бірінші нұсқа дұрыс, экранда араластырылады), "num" — сан енгізу */
+const VARIANTS = {
+  1: [
+    {type:"mc", t:"Айырманы табыңыз:", e:"1 − [3/7]",
+     o:["[4/7]","[3/7]","[2/7]","[1|4/7]"]},
+    {type:"mc", t:"Натурал саннан жай бөлшекті азайтыңыз:", e:"5 − [2/9]",
+     o:["[4|7/9]","[5|2/9]","[3|7/9]","[4|2/9]"]},
+    {type:"mc", t:"Аралас сандардың қосындысын табыңыз:", e:"[2|3/8] + [1|4/8]",
+     o:["[3|7/8]","[3|1/8]","[4|7/8]","[3|7/16]"]},
+    {type:"mc", t:"Аралас сандардың айырмасын табыңыз:", e:"[4|5/6] − [2|1/6]",
+     o:["[2|4/6]","[1|4/6]","[6|4/6]","[2|1/6]"]},
+    {type:"mc", t:"Қосындыны табыңыз (бөлшек бөлігі бұрыс бөлшек болса, бүтін бөлігін бөліп алыңыз):", e:"[3|4/5] + [2|3/5]",
+     o:["[6|2/5]","[5|2/5]","[5|7/10]","[7|2/5]"]},
+    {type:"mc", t:"Айырманы табыңыз (азайтқыштың бөлшек бөлігі үлкен):", e:"[6|1/4] − [3|3/4]",
+     o:["[2|2/4]","[3|2/4]","[2|3/4]","[1|2/4]"]},
+    {type:"mc", t:"Арқанның ұзындығы 7 м. Одан [2|3/10] м кесіп алды. Арқанның қанша метрі қалды?", e:"",
+     o:["[4|7/10] м","[5|7/10] м","[5|3/10] м","[4|3/10] м"]},
+    {type:"mc", t:"Теңдеуді шешіңіз:", e:"x + [1|2/7] = [4|5/7]",
+     o:["x = [3|3/7]","x = 6","x = [2|3/7]","x = [3|4/7]"]},
+    {type:"num", t:"Өрнектің мәнін есептеп, жауабын сан түрінде енгізіңіз:", e:"8 − [3|2/5] − [1|3/5]",
+     a:3},
+    {type:"num", t:"Велосипедші бірінші сағатта [12|3/8] км, екінші сағатта [10|5/8] км жол жүрді. Ол екі сағатта барлығы неше километр жүрді? Жауабын сан түрінде енгізіңіз.", e:"",
+     a:23}
+  ],
+  2: [
+    {type:"mc", t:"Айырманы табыңыз:", e:"1 − [5/8]",
+     o:["[3/8]","[5/8]","[4/8]","[1|3/8]"]},
+    {type:"mc", t:"Натурал саннан жай бөлшекті азайтыңыз:", e:"7 − [4/11]",
+     o:["[6|7/11]","[7|4/11]","[6|4/11]","[5|7/11]"]},
+    {type:"mc", t:"Аралас сандардың қосындысын табыңыз:", e:"[3|2/9] + [4|5/9]",
+     o:["[7|7/9]","[7|3/9]","[8|7/9]","[7|7/18]"]},
+    {type:"mc", t:"Аралас сандардың айырмасын табыңыз:", e:"[5|7/10] − [1|3/10]",
+     o:["[4|4/10]","[3|4/10]","[6|4/10]","[4|3/10]"]},
+    {type:"mc", t:"Қосындыны табыңыз (бөлшек бөлігі бұрыс бөлшек болса, бүтін бөлігін бөліп алыңыз):", e:"[2|5/7] + [4|4/7]",
+     o:["[7|2/7]","[6|2/7]","[6|9/14]","[8|2/7]"]},
+    {type:"mc", t:"Айырманы табыңыз (азайтқыштың бөлшек бөлігі үлкен):", e:"[8|2/9] − [5|7/9]",
+     o:["[2|4/9]","[3|5/9]","[3|4/9]","[2|5/9]"]},
+    {type:"mc", t:"Ыдыста 5 л су бар еді. Одан [1|5/8] л су құйып алды. Ыдыста қанша литр су қалды?", e:"",
+     o:["[3|3/8] л","[4|3/8] л","[4|5/8] л","[3|5/8] л"]},
+    {type:"mc", t:"Теңдеуді шешіңіз:", e:"x − [2|3/10] = [1|4/10]",
+     o:["x = [3|7/10]","x = [9/10]","x = [3|1/10]","x = [4|7/10]"]},
+    {type:"num", t:"Өрнектің мәнін есептеп, жауабын сан түрінде енгізіңіз:", e:"10 − [4|3/7] − [2|4/7]",
+     a:3},
+    {type:"num", t:"Жұмысшылар бірінші күні [15|2/9] км, екінші күні [8|7/9] км жол жөндеді. Екі күнде барлығы неше километр жол жөндеді? Жауабын сан түрінде енгізіңіз.", e:"",
+     a:24}
+  ]
+};
+
+const LETTERS = ["A","B","C","D"];
+const $ = id => document.getElementById(id);
+
+let st = { fio:"", klass:"", variant:"", qs:[], i:0, answers:[], left:TIME_PER_Q,
+           timer:null, hides:0, running:false, startedAt:null };
+
+/* ---- бастапқы терезе ---- */
+function checkStart(){
+  $("btnStart").disabled = !($("fio").value.trim().length >= 3 && $("klass").value && $("variant").value);
+}
+["fio","klass","variant"].forEach(id=>{ $(id).addEventListener("input",checkStart); $(id).addEventListener("change",checkStart); });
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+$("btnStart").addEventListener("click",()=>{
+  st.fio = $("fio").value.trim().replace(/\s+/g," ");
+  st.klass = $("klass").value;
+  st.variant = $("variant").value;
+  st.qs = VARIANTS[st.variant].map(q=>{
+    if(q.type==="mc"){
+      const order = shuffle([0,1,2,3]);
+      return {...q, view:order.map(k=>({txt:q.o[k], correct:k===0}))};
+    }
+    return {...q};
+  });
+  st.answers = st.qs.map(()=>null);
+  st.i = 0; st.hides = 0; st.running = true; st.startedAt = new Date();
+  $("who").textContent = st.fio+" · "+st.klass+" · "+st.variant+"-нұсқа";
+  $("start").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  showQ();
+});
+
+/* ---- сұрақты көрсету ---- */
+function showQ(){
+  const q = st.qs[st.i];
+  $("qnum").textContent = "Тапсырма "+(st.i+1)+" / "+st.qs.length+" · 1 балл";
+  $("qtext").innerHTML = fmt(q.t) + (q.e ? '<span class="expr">'+fmt(q.e)+'</span>' : "");
+  $("bar").style.width = (st.i/st.qs.length*100)+"%";
+  $("btnNext").textContent = st.i===st.qs.length-1 ? "Аяқтау" : "Келесі";
+  $("btnNext").disabled = true;
+  const area = $("answerArea");
+  area.innerHTML = "";
+  if(q.type==="mc"){
+    $("qhint").textContent = "Бір дұрыс жауапты таңдаңыз";
+    const box = document.createElement("div"); box.className="opts";
+    q.view.forEach((v,k)=>{
+      const d = document.createElement("div"); d.className="opt";
+      d.innerHTML = '<span class="let">'+LETTERS[k]+'</span><span>'+fmt(v.txt)+'</span>';
+      d.addEventListener("click",()=>{
+        box.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));
+        d.classList.add("sel");
+        st.answers[st.i] = {k, txt:v.txt, correct:v.correct};
+        $("btnNext").disabled = false;
+      });
+      box.appendChild(d);
+    });
+    area.appendChild(box);
+  } else {
+    $("qhint").textContent = "Жауапты пернетақта арқылы енгізіңіз";
+    numBuf = "";
+    area.innerHTML =
+      '<div class="numbox">'+
+        '<div class="numinput empty" id="numDisp">жауап</div>'+
+        '<div class="keypad" id="keypad">'+
+          ['7','8','9','⌫','4','5','6','C','1','2','3','−','±','0',',',''].map(k=>
+            k==='' ? '<span></span>' :
+            '<button type="button" class="key'+(/[0-9]/.test(k)?'':' fn')+'" data-k="'+k+'">'+k+'</button>').join("")+
+        '</div>'+
+        '<div class="hint">«±» — таңбаны өзгертеді, «,» — ондық бөлшек, «⌫» — соңғы цифрды өшіреді, «C» — тазалайды</div>'+
+      '</div>';
+    $("keypad").addEventListener("click",e=>{
+      const b = e.target.closest(".key"); if(!b) return;
+      pressKey(b.dataset.k);
+    });
+  }
+  startTimer();
+}
+
+/* ---- сандық пернетақта ---- */
+let numBuf = "";
+function pressKey(k){
+  if(/^[0-9]$/.test(k)){
+    if(numBuf.replace(/[−,]/g,"").length >= 8) return;
+    if(numBuf==="0") numBuf=k; else if(numBuf==="−0") numBuf="−"+k; else numBuf+=k;
+  } else if(k==="−"){
+    if(numBuf==="") numBuf="−";
+  } else if(k==="±"){
+    numBuf = numBuf.startsWith("−") ? numBuf.slice(1) : "−"+numBuf;
+  } else if(k===","){
+    if(numBuf.includes(",")) return;
+    if(numBuf===""||numBuf==="−") numBuf+="0";
+    numBuf+=",";
+  } else if(k==="⌫"){
+    numBuf = numBuf.slice(0,-1);
+  } else if(k==="C"){
+    numBuf = "";
+  }
+  renderNum();
+}
+function renderNum(){
+  const d = $("numDisp"); if(!d) return;
+  if(numBuf===""){ d.textContent="жауап"; d.classList.add("empty"); }
+  else { d.textContent=numBuf; d.classList.remove("empty"); }
+  const val = parseNum(numBuf);
+  const q = st.qs[st.i];
+  if(val===null){ st.answers[st.i]=null; $("btnNext").disabled=true; }
+  else { st.answers[st.i]={txt:numBuf, correct:Math.abs(val-q.a)<1e-9}; $("btnNext").disabled=false; }
+}
+function parseNum(s){
+  if(!s || s==="−" || s.endsWith(",")) return null;
+  const v = parseFloat(s.replace("−","-").replace(",","."));
+  return isNaN(v) ? null : v;
+}
+/* компьютер пернетақтасынан да енгізуге болады */
+document.addEventListener("keydown",e=>{
+  if(!st.running || !$("numDisp")) return;
+  const map = {"Backspace":"⌫","Delete":"C","-":"−",",":",",".":","};
+  let k = /^[0-9]$/.test(e.key) ? e.key : map[e.key];
+  if(k){ e.preventDefault(); pressKey(k); }
+  if(e.key==="Enter" && !$("btnNext").disabled){ e.preventDefault(); next(); }
+});
+
+/* ---- таймер ---- */
+function startTimer(){
+  clearInterval(st.timer);
+  st.left = TIME_PER_Q; drawTimer();
+  st.timer = setInterval(()=>{
+    st.left--; drawTimer();
+    if(st.left<=0){ clearInterval(st.timer); next(true); }
+  },1000);
+}
+function drawTimer(){
+  const m = String(Math.floor(st.left/60)).padStart(2,"0"), s = String(st.left%60).padStart(2,"0");
+  $("timer").textContent = m+":"+s;
+  $("timer").classList.toggle("low", st.left<=30);
+}
+
+$("btnNext").addEventListener("click",()=>next());
+function next(timeout){
+  if(!st.running) return;
+  if(st.i < st.qs.length-1){ st.i++; showQ(); }
+  else finish();
+}
+
+/* ---- қойындыны жиыру бақылауы ---- */
+document.addEventListener("visibilitychange",()=>{
+  if(!st.running) return;
+  if(document.hidden){ st.hides++; }
+  else {
+    $("warnText").textContent = "Сіз тест кезінде қойындыдан (вкладкадан) шықтыңыз (жалпы: "+st.hides+
+      " рет). Қойындыны жиырған жағдайда баға 1 балға төмендетіледі. Тест жалғасады.";
+    $("warn").classList.remove("hidden");
+  }
+});
+$("warnOk").addEventListener("click",()=>$("warn").classList.add("hidden"));
+
+/* ---- аяқтау ---- */
+function finish(){
+  st.running = false;
+  clearInterval(st.timer);
+  $("warn").classList.add("hidden");
+  const raw = st.answers.filter(a=>a && a.correct).length;
+  const penalty = st.hides>0 ? 1 : 0;
+  const score = Math.max(0, raw - penalty);
+
+  $("quiz").classList.add("hidden");
+  $("result").classList.remove("hidden");
+  $("resWho").textContent = st.fio+" · "+st.klass+" · "+st.variant+"-нұсқа";
+  $("resScore").innerHTML = score+' <small>/ '+MAX_SCORE+'</small>';
+  $("resNote").textContent = penalty
+    ? "Қойынды "+st.hides+" рет жиырылды — баға 1 балға төмендетілді."
+    : "";
+
+
+
+  const payload = {
+    fio: st.fio, klass: st.klass, variant: st.variant,
+    score: score, max: MAX_SCORE, raw: raw, hides: st.hides, penalty: penalty,
+    detail: st.answers.map((a,k)=>(k+1)+":"+(a&&a.correct?"+":"−")).join(" "),
+    started: st.startedAt.toISOString(), finished: new Date().toISOString()
+  };
+  sendResult(payload);
+}
+
+function sendResult(p){
+  if(!SCRIPT_URL || SCRIPT_URL.indexOf("http")!==0){
+    $("sendStatus").textContent = "Apps Script URL көрсетілмеген — нәтиже кестеге жіберілмеді. Мұғалімге хабарлаңыз.";
+    return;
+  }
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p)})
+    .then(()=>{ $("sendStatus").textContent = "Нәтиже мұғалімге жіберілді. Рақмет!"; })
+    .catch(()=>{
+      $("sendStatus").innerHTML = 'Нәтижені жіберу мүмкін болмады. Интернетті тексеріп, қайталаңыз. '+
+        '<button class="btn ghost" id="retry" style="margin-top:8px">Қайта жіберу</button>';
+      $("retry").addEventListener("click",()=>{ $("sendStatus").textContent="Нәтиже жіберілуде…"; sendResult(p); });
+    });
+}
+
+/* тест кезінде бетті жабуға ескерту */
+window.addEventListener("beforeunload",e=>{ if(st.running){ e.preventDefault(); e.returnValue=""; } });
+</script>
+</body>
+</html>
